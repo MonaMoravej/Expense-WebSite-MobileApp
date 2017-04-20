@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServices", "Expense-WebSite-MobileApp\WebServices.csproj", "{36929678-0819-478D-90D1-0F5785396FE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expense-WebSite-MobileApp.Tests", "Expense-WebSite-MobileApp.Tests\Expense-WebSite-MobileApp.Tests.csproj", "{D36A0FE1-5C67-480B-AC7C-D8510F82E37E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{F45522E9-5692-4867-BE24-AA30C2EC8512}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{36929678-0819-478D-90D1-0F5785396FE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36929678-0819-478D-90D1-0F5785396FE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36929678-0819-478D-90D1-0F5785396FE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D36A0FE1-5C67-480B-AC7C-D8510F82E37E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D36A0FE1-5C67-480B-AC7C-D8510F82E37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D36A0FE1-5C67-480B-AC7C-D8510F82E37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D36A0FE1-5C67-480B-AC7C-D8510F82E37E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F45522E9-5692-4867-BE24-AA30C2EC8512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F45522E9-5692-4867-BE24-AA30C2EC8512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F45522E9-5692-4867-BE24-AA30C2EC8512}.Release|Any CPU.ActiveCfg = Release|Any CPU

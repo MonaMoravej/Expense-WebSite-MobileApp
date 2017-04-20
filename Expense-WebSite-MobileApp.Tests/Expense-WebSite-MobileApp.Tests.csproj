@@ -102,9 +102,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Expense-WebSite-MobileApp\Expense-WebSite-MobileApp.csproj">
+    <ProjectReference Include="..\Expense-WebSite-MobileApp\WebServices.csproj">
       <Project>{36929678-0819-478D-90D1-0F5785396FE7}</Project>
-      <Name>Expense-WebSite-MobileApp</Name>
+      <Name>WebServices</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
