@@ -6,42 +6,77 @@ using Microsoft.Owin;
 using Data.Entities;
 using Data;
 using Expense_WebSite_MobileApp.Models;
+using Microsoft.Owin.Security;
+using System.Security.Claims;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace Expense_WebSite_MobileApp
 {
-    // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
+    // Configure the application user manager used in this application.
+    //UserManager is defined in ASP.NET Identity and is used by the application.
 
-    public class ApplicationUserManager : UserManager<User,long>
+    public class ApplicationUserManager : UserManager<User, long>
     {
-        public ApplicationUserManager(IUserStore<User,long> store)
+        public ApplicationUserManager(IUserStore<User, long> store)
             : base(store)
         {
-        }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
-        {
-            var manager = new ApplicationUserManager(new UserStore<User,Role,long,UserLogin,UserRole,UserClaim>(context.Get<ApplicationDbContext>()));
-            // Configure validation logic for usernames
-            manager.UserValidator = new UserValidator<User,long>(manager)
+            this.UserValidator = new UserValidator<User, long>(this)
             {
                 AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = true
+                RequireUniqueEmail = false
             };
             // Configure validation logic for passwords
-            manager.PasswordValidator = new PasswordValidator
+            this.PasswordValidator = new PasswordValidator
             {
-                RequiredLength = 6,
-                RequireNonLetterOrDigit = true,
-                RequireDigit = true,
+               // RequiredLength = 6,
+              //  RequireNonLetterOrDigit = true,
+              //  RequireDigit = true,
                 RequireLowercase = true,
-                RequireUppercase = true,
+               // RequireUppercase = true,
             };
-            var dataProtectionProvider = options.DataProtectionProvider;
-            if (dataProtectionProvider != null)
-            {
-                manager.UserTokenProvider = new DataProtectorTokenProvider<User,long>(dataProtectionProvider.Create("ASP.NET Identity"));
-            }
-            return manager;
+
+            //var dataProtectionProvider = Startup.DataProtectionProvider;
+
+            // this is unchanged
+            //if (dataProtectionProvider != null)
+            //{
+            //    IDataProtector dataProtector = dataProtectionProvider.Create("ASP.NET Identity");
+
+            //    this.UserTokenProvider = new DataProtectorTokenProvider<User, long>(dataProtector);
+            //}
+
+
+
+
         }
+
+
     }
+
+    // Configure the application sign-in manager which is used in this application.  
+    public class ApplicationSignInManager : SignInManager<User, long>
+    {
+        public ApplicationSignInManager(ApplicationUserManager userManager,
+            IAuthenticationManager authenticationManager) :
+
+            base(userManager,
+                authenticationManager)
+        { }
+
+
+    }
+
+
 }
+
+
+//public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
+//{
+//    return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
+//}
+
+//public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
+//{
+//    return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
+//}

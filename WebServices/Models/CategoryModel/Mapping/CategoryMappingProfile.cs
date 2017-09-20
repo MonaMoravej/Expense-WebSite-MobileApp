@@ -7,9 +7,9 @@ using System.Web;
 
 namespace Expense_WebSite_MobileApp.Models.CategoryModel.Mapping
 {
-    public class CategoryProfile : Profile
+    public class CategoryMappingProfile : Profile
     {
-        public CategoryProfile()
+        public CategoryMappingProfile()
         {
             CreateMap<Category, CategoryViewModel>().ForMember(cm => cm.Etag, opt => opt.MapFrom("RowVersion"))
                .ForMember(cm => cm.TypeName, opt => opt.ResolveUsing(c => c.Type.ToString()))

@@ -16,13 +16,14 @@ using AutoMapper;
 using Expense_WebSite_MobileApp.Models;
 using Expense_WebSite_MobileApp.Models.CategoryModel;
 
+
 namespace Expense_WebSite_MobileApp.Controllers
 {
     public class CategoriesController : ApiController
     {
         public CategoriesController() { }
         public CategoriesController(ICategoryRepository repository
-            ,IMapper mapper
+            , IMapper mapper
             )
         {
             Repository = repository;
@@ -32,11 +33,17 @@ namespace Expense_WebSite_MobileApp.Controllers
         private ICategoryRepository Repository;
         private IMapper Mapper;
         // GET: api/Categories
+
+
+
+
+        // [Authorize]
         public IEnumerable<CategoryViewModel> GetCategories()
         {
             var lst = Repository.GetAll(1);
             IEnumerable<CategoryViewModel> restLst = Mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(lst);
             return restLst;
+
         }
 
         // GET: api/Categories/5

@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -14,7 +13,9 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using Expense_WebSite_MobileApp.Models;
-using Expense_WebSite_MobileApp.Providers;
+using Data.Entities;
+using AutoMapper;
+using Expense_WebSite_MobileApp.Models.UserModel;
 using Expense_WebSite_MobileApp.Results;
 
 namespace Expense_WebSite_MobileApp.Controllers
@@ -24,47 +25,37 @@ namespace Expense_WebSite_MobileApp.Controllers
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";
-        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager { get; private set; }
+        public ApplicationSignInManager SignInManager { get; private set; }
+        public  IMapper Mapper { get; private set; }
 
-        public AccountController()
-        {
-        }
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+            IMapper mapper,ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
-            AccessTokenFormat = accessTokenFormat;
+           
+            Mapper = mapper;
+            SignInManager = signInManager;
         }
 
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
-
+       
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET api/Account/UserInfo
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        [Route("UserInfo")]
-        public UserInfoViewModel GetUserInfo()
-        {
-            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
+        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        //[Route("UserInfo")]
+        //public Models.UserModel.UserInfoViewModel GetUserInfo()
+        //{
+        //    ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
-            return new UserInfoViewModel
-            {
-                Email = User.Identity.GetUserName(),
-                HasRegistered = externalLogin == null,
-                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
-            };
-        }
+        //    //return new Models.UserModel.UserInfoViewModel
+        //    //{
+        //    //    Email = User.Identity.GetUserName(),
+        //    //    HasRegistered = externalLogin == null,
+        //    //    LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
+        //    //};
+        //}
 
         // POST api/Account/Logout
         [Route("Logout")]
@@ -78,7 +69,7 @@ namespace Expense_WebSite_MobileApp.Controllers
         [Route("ManageInfo")]
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
-            IdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            IdentityUser user = await UserManager.FindByIdAsync(long.Parse(User.Identity.GetUserId()));
 
             if (user == null)
             {
@@ -123,7 +114,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
+            IdentityResult result = await UserManager.ChangePasswordAsync(long.Parse(User.Identity.GetUserId()), model.OldPassword,
                 model.NewPassword);
             
             if (!result.Succeeded)
@@ -143,7 +134,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+            IdentityResult result = await UserManager.AddPasswordAsync(long.Parse(User.Identity.GetUserId()), model.NewPassword);
 
             if (!result.Succeeded)
             {
@@ -180,7 +171,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                 return BadRequest("The external login is already associated with an account.");
             }
 
-            IdentityResult result = await UserManager.AddLoginAsync(User.Identity.GetUserId(),
+            IdentityResult result = await UserManager.AddLoginAsync(long.Parse(User.Identity.GetUserId()),
                 new UserLoginInfo(externalData.LoginProvider, externalData.ProviderKey));
 
             if (!result.Succeeded)
@@ -204,11 +195,11 @@ namespace Expense_WebSite_MobileApp.Controllers
 
             if (model.LoginProvider == LocalLoginProvider)
             {
-                result = await UserManager.RemovePasswordAsync(User.Identity.GetUserId());
+                result = await UserManager.RemovePasswordAsync(long.Parse(User.Identity.GetUserId()));
             }
             else
             {
-                result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(),
+                result = await UserManager.RemoveLoginAsync(long.Parse(User.Identity.GetUserId()),
                     new UserLoginInfo(model.LoginProvider, model.ProviderKey));
             }
 
@@ -250,7 +241,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                 return new ChallengeResult(provider, this);
             }
 
-            ApplicationUser user = await UserManager.FindAsync(new UserLoginInfo(externalLogin.LoginProvider,
+            User user = await UserManager.FindAsync(new UserLoginInfo(externalLogin.LoginProvider,
                 externalLogin.ProviderKey));
 
             bool hasRegistered = user != null;
@@ -259,13 +250,13 @@ namespace Expense_WebSite_MobileApp.Controllers
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
                 
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
-                ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    CookieAuthenticationDefaults.AuthenticationType);
+                // ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                //    OAuthDefaults.AuthenticationType);
+                //ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                //    CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
-                Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
+                //AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                //Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
             {
@@ -306,7 +297,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                     {
                         provider = description.AuthenticationType,
                         response_type = "token",
-                        client_id = Startup.PublicClientId,
+                        //client_id = Startup.PublicClientId,
                         redirect_uri = new Uri(Request.RequestUri, returnUrl).AbsoluteUri,
                         state = state
                     }),
@@ -321,15 +312,18 @@ namespace Expense_WebSite_MobileApp.Controllers
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
-        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
+        public async Task<IHttpActionResult> Register(Models.UserModel.RegisterModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
-
+            
+           var user = Mapper.Map<Models.UserModel.RegisterModel, User>(model);
+            //user.UserName = model.Email;
+            
+                //new User() { UserName = model.Email, Email = model.Email };
+           
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -357,7 +351,7 @@ namespace Expense_WebSite_MobileApp.Controllers
                 return InternalServerError();
             }
 
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+            var user = new User() { UserName = model.Email, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user);
             if (!result.Succeeded)
@@ -373,17 +367,7 @@ namespace Expense_WebSite_MobileApp.Controllers
             return Ok();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && _userManager != null)
-            {
-                _userManager.Dispose();
-                _userManager = null;
-            }
-
-            base.Dispose(disposing);
-        }
-
+      
         #region Helpers
 
         private IAuthenticationManager Authentication
