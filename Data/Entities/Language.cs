@@ -16,7 +16,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [Required]
-        [StringLength(3)]
+        [StringLength(20)]
         public string Key { get; set; }
 
 

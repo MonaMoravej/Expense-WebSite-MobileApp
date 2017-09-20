@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Microsoft.AspNet.Identity.EntityFramework;
-
+using Microsoft.AspNet.Identity;
 
 namespace Data.Entities
 {
@@ -50,9 +50,11 @@ namespace Data.Entities
         public static implicit operator IdentityUser(User v)
         {
             throw new NotImplementedException();
+           
+
         }
 
-
+      
         //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User,Guid> manager)
         //{
         //    // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

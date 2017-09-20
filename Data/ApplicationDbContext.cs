@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
@@ -12,7 +13,8 @@ namespace Data
     {
         public ApplicationDbContext() : base("name=DbConnection")
         {
-            
+            Database.Log = sql => Debug.Write(sql);
+           
             
         }
 

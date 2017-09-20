@@ -62,9 +62,9 @@
         {
             if (!db.Languages.Any())
             {
-                db.Languages.Add(new Language() { Name = "English" ,Key="ENG"});
-                db.Languages.Add(new Language() { Name = "فارسی",Key="FA" });
-                db.Languages.Add(new Language() { Name = "Malay" ,Key="MAL"});
+                db.Languages.Add(new Language() { Name = "English" ,Key="en-US"});
+                db.Languages.Add(new Language() { Name = "فارسی",Key="fa" });
+               
                 db.SaveChanges();
             }
         }
